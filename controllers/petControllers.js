@@ -1,15 +1,19 @@
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 8080;
-const cors = require('cors');
-const pool = require('./db');
+const pool = require('../db');
 
-app.use(cors());
-app.use(express.json());
+// Get all pets
+
+exports.getAllPets = ('/pets', async (req, res) => {
+    try {
+        const allPets = await pool.query('SELECT * FROM pets');
+        res.json(allPets.rows);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
 
 // Create pet
 
-app.post('/pets', async (req, res) => {
+exports.createPet = ('/pets', async (req, res) => {
     const { petName, petAge, ownerName, species } = req.body;
 
     console.log(req.body);
@@ -26,20 +30,9 @@ app.post('/pets', async (req, res) => {
     }
 });
 
-// Get all pets
-
-app.get('/pets', async (req, res) => {
-    try {
-        const allPets = await pool.query('SELECT * FROM pets');
-        res.json(allPets.rows);
-    } catch (err) {
-        console.error(err.message);
-    }
-});
-
 // Get a pet
 
-app.get('/pets/:id', async (req, res) => {
+exports.getPet = ('/pets/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const pet = await pool.query(
@@ -52,7 +45,9 @@ app.get('/pets/:id', async (req, res) => {
     }
 });
 
-app.put('/pets/:id', async (req, res) => {
+// Update pet
+
+exports.updatePet = ('/pets/:id', async (req, res) => {
     const { id } = req.params;
     const { petName, petAge, ownerName, species } = req.body;
     try {
@@ -65,7 +60,9 @@ app.put('/pets/:id', async (req, res) => {
     }
 });
 
-app.delete('/pets/:id', async (req, res) => {
+// Delete pet
+
+exports.deletePet = ('/pets/:id', async (req, res) => {
     const { id } = req.params;
     try {
         const deletePet = await pool.query('DELETE FROM pets WHERE pet_id = $1', [id]);
@@ -73,8 +70,4 @@ app.delete('/pets/:id', async (req, res) => {
     } catch (err) {
         console.error(err.message);
     }
-});
-
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
 });
