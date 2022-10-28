@@ -15,9 +15,6 @@ exports.getAllPets = ('/pets', async (req, res) => {
 
 exports.createPet = ('/pets', async (req, res) => {
     const { petName, petAge, ownerName, species } = req.body;
-
-    console.log(req.body);
-
     try {
         const newPet = await pool.query(
             'INSERT INTO pets (pet_name, pet_age, owner_name, species) VALUES($1, $2, $3, $4) RETURNING *',
